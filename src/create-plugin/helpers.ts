@@ -61,6 +61,30 @@ export function getProperty(node: ObjectExpression, key: string): ObjectProperty
   return node.properties.find(prop => getKey(prop) === key);
 }
 
+export const renameProperty = (oldKey: string, newKey: string) =>
+  replaceProperties(properties =>
+    properties.map(prop => {
+      if (getKey(prop) !== oldKey) {
+        return prop;
+      }
+
+      const key = prop.key;
+
+      return {
+        ...prop,
+        key: isStringLiteral(prop.key)
+          ? {
+              ...key,
+              value: newKey,
+            }
+          : {
+              ...key,
+              name: newKey,
+            },
+      };
+    }),
+  );
+
 export const sortObjectProperties = (
   order?: string[] | ((node: ObjectExpression, opts: ParserOptions) => string[] | undefined),
 ) =>

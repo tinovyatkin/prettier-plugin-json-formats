@@ -1,41 +1,69 @@
 import {
   createJsonPlugin,
   getPropertyKeys,
-  isObjectExpression,
   JsonPlugin,
   replacePropertyValue,
   sortObjectProperties,
   combine,
+  replacePropertyValues,
+  renameProperty,
+  deepSortObjectProperties,
 } from './create-plugin';
+import {ParserOptions} from 'prettier';
+
+interface AngularCliParserOptions extends ParserOptions {
+  angularCliTopProjects: string;
+  angularCliBottomProjects: string;
+}
 
 const plugin = createJsonPlugin(
   {name: 'angular-cli'},
   combine(
-    sortObjectProperties(['version', '$schema', 'newProjectRoot', 'projects', 'cli', 'schematics']),
+    sortObjectProperties(['$schema', 'version', 'newProjectRoot', 'projects', 'cli', 'schematics']),
 
     replacePropertyValue(
       'projects',
-      sortObjectProperties((projects, options) => {
-        if (!isObjectExpression(projects)) {
-          return projects;
-        }
+      combine(
+        sortObjectProperties((projects, options) => {
+          const keys = getPropertyKeys(projects).sort();
 
-        const keys = getPropertyKeys(projects).sort();
+          const sortAtTheTop = parseProjectNamesOption(
+            (options as AngularCliParserOptions).angularCliTopProjects,
+          );
+          const sortAtTheBottom = parseProjectNamesOption(
+            (options as AngularCliParserOptions).angularCliBottomProjects,
+          );
 
-        const sortAtTheTop = parseProjectNamesOption((options as any).angularCliTopProjects);
-        const sortAtTheBottom = parseProjectNamesOption((options as any).angularCliBottomProjects);
+          return [
+            ...keys.filter(key => sortAtTheTop.includes(key)),
 
-        return [
-          ...keys.filter(key => sortAtTheTop.includes(key)),
+            ...keys.filter(key => !sortAtTheTop.includes(key) && !sortAtTheBottom.includes(key)),
 
-          ...keys.filter(key => !sortAtTheTop.includes(key) && !sortAtTheBottom.includes(key)),
+            ...keys.filter(key => sortAtTheBottom.includes(key)),
+          ];
+        }),
 
-          ...keys.filter(key => sortAtTheBottom.includes(key)),
-        ];
-      }),
+        replacePropertyValues(
+          combine(
+            renameProperty('targets', 'architect'),
+
+            sortObjectProperties(['projectType', 'root', 'sourceRoot', 'architect', 'schematics']),
+
+            replacePropertyValue(
+              'architect',
+              combine(
+                deepSortObjectProperties(),
+                sortObjectProperties(['builder', 'options', 'configurations', 'schematics']),
+              ),
+            ),
+
+            replacePropertyValue('schematics', deepSortObjectProperties()),
+          ),
+        ),
+      ),
     ),
 
-    replacePropertyValue('schematics', sortObjectProperties()),
+    replacePropertyValue('schematics', deepSortObjectProperties()),
   ),
 );
 
