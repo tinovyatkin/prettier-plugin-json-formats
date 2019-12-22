@@ -7,7 +7,7 @@
   "license": "MIT",
   "author": "Bram Gotink <bram@gotink.me>",
   "scripts": {
-    "build": "tsc && jq 'del(.scripts) | del(.devDependencies) | del(.private)' package.json >dist/package.json"
+    "build": "tsc && cp README.md dist/ && jq 'del(.scripts) | del(.devDependencies) | del(.private)' package.json >dist/package.json"
   },
   "main": "index.js",
   "dependencies": {
