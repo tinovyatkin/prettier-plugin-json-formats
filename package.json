@@ -1,0 +1,30 @@
+{
+  "name": "prettier-plugin-json-formats",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "author": "Bram Gotink <bram@gotink.me>",
+  "scripts": {
+    "build": "tsc && jq 'del(.scripts) | del(.devDependencies) | del(.private)' package.json >dist/package.json"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "@babel/types": "7.7.4",
+    "@types/prettier": "1.19.0"
+  },
+  "peerDependencies": {
+    "prettier": "^1.19.1"
+  },
+  "devDependencies": {
+    "@types/node": "12.12.2",
+    "@typescript-eslint/eslint-plugin": "2.9.0",
+    "@typescript-eslint/parser": "2.9.0",
+    "eslint": "6.7.2",
+    "husky": "3.1.0",
+    "prettier": "1.19.1",
+    "prettier-plugin-json-formats": "link:.",
+    "pretty-quick": "2.0.1",
+    "ts-node": "8.5.4",
+    "typescript": "3.7.2"
+  }
+}

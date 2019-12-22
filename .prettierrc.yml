@@ -1,0 +1,11 @@
+singleQuote: true
+quoteProps: as-needed
+trailingComma: all
+bracketSpacing: false
+arrowParens: avoid
+printWidth: 100
+
+overrides:
+  - files: package.json
+    options:
+      parser: package-json

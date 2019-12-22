@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "es2019",
+    "module": "commonjs",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+
+    "lib": ["ES2019"],
+    "types": ["node"],
+
+    "outDir": "dist",
+    "rootDir": "src",
+    "declaration": true,
+
+    "pretty": true
+  }
+}
