@@ -2,6 +2,11 @@
   "name": "prettier-plugin-json-formats",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://github.com/bgotink/prettier-plugin-json-formats",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bgotink/prettier-plugin-json-formats.git"
+  },
   "license": "MIT",
   "author": "Bram Gotink <bram@gotink.me>",
   "scripts": {
