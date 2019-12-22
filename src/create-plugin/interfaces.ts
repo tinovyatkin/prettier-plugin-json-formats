@@ -42,9 +42,9 @@ export type Literal = StringLiteral | NumberLiteral | NullLiteral | BooleanLiter
 export type Expression = ObjectExpression | ArrayExpression | UnaryExpression | Literal;
 
 export interface BaseNode {
-  leadingComments: ReadonlyArray<Comment> | null;
-  innerComments: ReadonlyArray<Comment> | null;
-  trailingComments: ReadonlyArray<Comment> | null;
+  leadingComments: readonly Comment[] | null;
+  innerComments: readonly Comment[] | null;
+  trailingComments: readonly Comment[] | null;
   start: number | null;
   end: number | null;
   loc: SourceLocation | null;
@@ -53,12 +53,12 @@ export interface BaseNode {
 
 export interface ArrayExpression extends BaseNode {
   type: 'ArrayExpression';
-  elements: Array<Expression>;
+  elements: Expression[];
 }
 
 export interface ObjectExpression extends BaseNode {
   type: 'ObjectExpression';
-  properties: Array<ObjectProperty>;
+  properties: ObjectProperty[];
 }
 
 export interface ObjectProperty extends BaseNode {
