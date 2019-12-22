@@ -2,6 +2,11 @@
   "name": "prettier-plugin-json-formats",
   "version": "0.1.1",
   "private": true,
+  "description": "Prettier plugin adding formatting rules for specific JSON file formats",
+  "keywords": [
+    "prettier",
+    "prettier-plugin"
+  ],
   "homepage": "https://github.com/bgotink/prettier-plugin-json-formats",
   "repository": "github:bgotink/prettier-plugin-json-formats",
   "license": "MIT",
