@@ -6,6 +6,7 @@ import {
   sortStringArray,
   combine,
   replacePropertyValues,
+  deepSortObjectProperties,
 } from './create-plugin';
 
 const lifecycleScripts = [
@@ -108,7 +109,7 @@ export const packageJsonPlugin = createJsonPlugin(
     ]),
 
     // Sort all properties that are objects alphabetically
-    replacePropertyValues(sortObjectProperties()),
+    replacePropertyValues(deepSortObjectProperties()),
     // Sort scripts again using a different order
     replacePropertyValue('scripts', sortScripts),
 

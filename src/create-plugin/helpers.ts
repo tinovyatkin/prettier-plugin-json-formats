@@ -92,6 +92,17 @@ export const sortObjectProperties = (
     ];
   });
 
+export function deepSortObjectProperties(
+  order?: string[] | ((node: ObjectExpression, opts: ParserOptions) => string[] | undefined),
+) {
+  const deepSort = combine(
+    sortObjectProperties(order),
+    replacePropertyValues((node, opts) => (isObjectExpression(node) ? deepSort(node, opts) : node)),
+  );
+
+  return deepSort;
+}
+
 function getKey(prop: ObjectProperty): string {
   return isStringLiteral(prop.key) ? prop.key.value : prop.key.name;
 }
