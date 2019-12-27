@@ -1,3 +1,5 @@
+import {ParserOptions} from 'prettier';
+
 import {
   Expression,
   ObjectExpression,
@@ -9,7 +11,6 @@ import {
   ArrayExpression,
   AstModifier,
 } from './interfaces';
-import {ParserOptions} from 'prettier';
 
 export function combine(...fns: AstModifier[]): AstModifier {
   return (node, opts) => fns.reduce((node, fn) => fn(node, opts), node);

@@ -1,5 +1,5 @@
 import {doc, Doc, FastPath, Printer, ParserOptions} from 'prettier';
-import {AstModifier, Expression, Node} from './interfaces';
+import {AstModifier, Expression, Node} from '../interfaces';
 
 const {concat, hardline, indent, join} = doc.builders;
 

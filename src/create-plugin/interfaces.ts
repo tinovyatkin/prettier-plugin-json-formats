@@ -1,30 +1,50 @@
 import {
+  arrayExpression as _arrayExpression,
   BooleanLiteral,
+  Comment,
   Identifier,
+  isArrayExpression as _isArrayExpression,
+  isObjectExpression as _isObjectExpression,
+  isObjectProperty as _isObjectProperty,
   NullLiteral,
-  NumberLiteral,
+  NumericLiteral,
+  objectExpression as _objectExpression,
+  objectProperty as _objectProperty,
   SourceLocation,
   StringLiteral,
   UnaryExpression,
-  Comment,
 } from '@babel/types';
-import {ParserOptions, SupportLanguage, Parser, Printer, SupportOption} from 'prettier';
+import {ParserOptions} from 'prettier';
 
 export {
+  addComment,
+  addComments,
+  booleanLiteral,
   BooleanLiteral,
+  Comment,
+  CommentBlock,
+  CommentLine,
+  CommentTypeShorthand,
   Identifier,
+  inheritInnerComments,
+  inheritLeadingComments,
+  inheritsComments,
+  inheritTrailingComments,
   isBooleanLiteral,
   isIdentifier,
   isNullLiteral,
-  isNumberLiteral,
+  isNumericLiteral,
   isStringLiteral,
   isUnaryExpression,
+  nullLiteral,
   NullLiteral,
-  NumberLiteral,
+  numericLiteral,
+  NumericLiteral,
+  removeComments,
   SourceLocation,
+  stringLiteral,
   StringLiteral,
   UnaryExpression,
-  Comment,
 } from '@babel/types';
 
 export type Node =
@@ -32,13 +52,13 @@ export type Node =
   | ObjectProperty
   | ArrayExpression
   | StringLiteral
-  | NumberLiteral
+  | NumericLiteral
   | NullLiteral
   | BooleanLiteral
   | Identifier
   | UnaryExpression;
 
-export type Literal = StringLiteral | NumberLiteral | NullLiteral | BooleanLiteral | Identifier;
+export type Literal = StringLiteral | NumericLiteral | NullLiteral | BooleanLiteral | Identifier;
 export type Expression = ObjectExpression | ArrayExpression | UnaryExpression | Literal;
 
 export interface BaseNode {
@@ -70,29 +90,21 @@ export interface ObjectProperty extends BaseNode {
   decorators: null;
 }
 
-export function isArrayExpression(node: Node): node is ArrayExpression {
-  return node.type === 'ArrayExpression';
-}
+export const isArrayExpression: (node: Node) => node is ArrayExpression = _isArrayExpression as any;
+export const isObjectExpression: (
+  node: Node,
+) => node is ObjectExpression = _isObjectExpression as any;
+export const isObjectProperty: (node: Node) => node is ObjectProperty = _isObjectProperty as any;
 
-export function isObjectExpression(node: Node): node is ObjectExpression {
-  return node.type === 'ObjectExpression';
-}
-
-export function isObjectProperty(node: Node): node is ObjectProperty {
-  return node.type === 'ObjectProperty';
-}
+export const objectProperty: (
+  key: StringLiteral | Identifier,
+  value: Expression,
+) => ObjectProperty = _objectProperty as any;
+export const objectExpression: (
+  entries: ObjectProperty[],
+) => ObjectExpression = _objectExpression as any;
+export const arrayExpression: (elements: Expression[]) => ArrayExpression = _arrayExpression as any;
 
 export interface AstModifier<T extends Node = Expression, R extends Node = T> {
   (node: T, options: ParserOptions): R;
-}
-
-export type CustomLanguage = Omit<SupportLanguage, 'parsers'>;
-
-export interface JsonPlugin {
-  languages: SupportLanguage[];
-
-  options?: Record<string, SupportOption>;
-
-  parsers: Record<string, Parser>;
-  printers: Record<string, Printer>;
 }

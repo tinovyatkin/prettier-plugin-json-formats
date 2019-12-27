@@ -1,34 +1,30 @@
-import {Parser} from 'prettier';
-import {parsers} from 'prettier/parser-babylon';
-import {JsonPlugin, AstModifier, CustomLanguage} from './interfaces';
-import {createPrinter} from './printer';
+import {SupportLanguage, Parser, Printer, SupportOption} from 'prettier';
 
-const baseParser = parsers['json-stringify'];
+import {createJsonStringifyPlugin} from './json-stringify';
+import {AstModifier} from './interfaces';
 
-function createParser(astFormat: string): Parser {
-  return {
-    ...baseParser,
-    astFormat,
-  };
+export type CustomLanguage = Omit<SupportLanguage, 'parsers'>;
+
+export interface JsonPlugin {
+  languages: SupportLanguage[];
+
+  options?: Record<string, SupportOption>;
+
+  parsers: Record<string, Parser>;
+  printers: Record<string, Printer>;
 }
 
 export function createJsonPlugin(language: CustomLanguage, modifier: AstModifier): JsonPlugin {
   const astFormat = language.name;
 
   return {
+    ...createJsonStringifyPlugin(astFormat, modifier),
+
     languages: [
       {
         ...language,
         parsers: [astFormat],
       },
     ],
-
-    parsers: {
-      [astFormat]: createParser(astFormat),
-    },
-
-    printers: {
-      [astFormat]: createPrinter(modifier),
-    },
   };
 }
