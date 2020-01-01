@@ -16,9 +16,11 @@ function locEnd(node: Node): number {
   return node.end.offset;
 }
 
-export const parser: Parser = {
-  astFormat: 'json',
-  locStart,
-  locEnd,
-  parse: text => parseJson(text, ParserFlags.Loose),
-};
+export function createParser(astFormat: string, flags = ParserFlags.Loose): Parser {
+  return {
+    astFormat,
+    locStart,
+    locEnd,
+    parse: text => parseJson(text, flags),
+  };
+}

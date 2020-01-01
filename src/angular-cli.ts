@@ -16,9 +16,9 @@ interface AngularCliParserOptions extends ParserOptions {
   angularCliBottomProjects: string;
 }
 
-const plugin = createJsonPlugin(
-  {name: 'angular-cli'},
-  combine(
+const plugin = createJsonPlugin({
+  language: {name: 'angular-cli'},
+  modifier: combine(
     sortObjectProperties(['$schema', 'version', 'newProjectRoot', 'projects', 'cli', 'schematics']),
 
     replacePropertyValue(
@@ -65,7 +65,7 @@ const plugin = createJsonPlugin(
 
     replacePropertyValue('schematics', deepSortObjectProperties()),
   ),
-);
+});
 
 function parseProjectNamesOption(option: string) {
   return option

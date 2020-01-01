@@ -59,9 +59,9 @@ const sortScripts = sortObjectProperties(node =>
   }),
 );
 
-export const packageJsonPlugin = createJsonPlugin(
-  {name: 'package-json'},
-  combine(
+export const packageJsonPlugin = createJsonPlugin({
+  language: {name: 'package-json'},
+  modifier: combine(
     // Sort the top-level object in a given order
     sortObjectProperties([
       'name',
@@ -117,4 +117,4 @@ export const packageJsonPlugin = createJsonPlugin(
     replacePropertyValue('bundleDependencies', sortStringArray),
     replacePropertyValue('bundledDependencies', sortStringArray),
   ),
-);
+});
