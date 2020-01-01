@@ -16,7 +16,6 @@
   },
   "main": "index.js",
   "dependencies": {
-    "@babel/types": "7.7.4",
     "@types/prettier": "1.19.0"
   },
   "peerDependencies": {

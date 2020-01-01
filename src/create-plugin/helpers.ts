@@ -3,14 +3,25 @@ import {ParserOptions} from 'prettier';
 import {
   Expression,
   ObjectExpression,
-  isStringLiteral,
   ObjectProperty,
   StringLiteral,
-  isArrayExpression,
-  isObjectExpression,
   ArrayExpression,
-  AstModifier,
-} from './interfaces';
+  Node,
+} from './parser';
+
+import {AstModifier} from './interfaces';
+
+function isStringLiteral(node: Node): node is StringLiteral {
+  return node.type === 'string';
+}
+
+function isArrayExpression(node: Node): node is ArrayExpression {
+  return node.type === 'array';
+}
+
+function isObjectExpression(node: Node): node is ObjectExpression {
+  return node.type === 'object';
+}
 
 export function combine(...fns: AstModifier[]): AstModifier {
   return (node, opts) => fns.reduce((node, fn) => fn(node, opts), node);
@@ -129,7 +140,7 @@ export function deepSortObjectProperties(
 }
 
 function getKey(prop: ObjectProperty): string {
-  return isStringLiteral(prop.key) ? prop.key.value : prop.key.name;
+  return prop.key.value;
 }
 
 export function getPropertyKeys(node: ObjectExpression): string[] {

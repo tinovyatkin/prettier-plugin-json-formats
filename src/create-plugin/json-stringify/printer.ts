@@ -1,5 +1,6 @@
 import {doc, Doc, FastPath, Printer, ParserOptions} from 'prettier';
-import {AstModifier, Expression, Node} from '../interfaces';
+import {Node, Expression} from '../parser';
+import {AstModifier} from '../interfaces';
 
 const {concat, hardline, indent, join} = doc.builders;
 
@@ -8,13 +9,12 @@ type ExtendedNode =
   | {
       type: 'JsonRoot';
       node: Node;
-      comments: [];
     };
 
 function createPreprocessor(modifier: AstModifier) {
   return function preprocess(ast: Node, options: ParserOptions): ExtendedNode {
     ast = modifier(ast as Expression, options);
-    return {...ast, type: 'JsonRoot', node: ast, comments: []};
+    return {...ast, type: 'JsonRoot', node: ast};
   };
 }
 
@@ -27,7 +27,7 @@ function genericPrint(
   switch (node.type) {
     case 'JsonRoot':
       return concat([path.call(print, 'node'), hardline]);
-    case 'ArrayExpression':
+    case 'array':
       return node.elements.length === 0
         ? '[]'
         : concat([
@@ -36,7 +36,7 @@ function genericPrint(
             hardline,
             ']',
           ]);
-    case 'ObjectExpression':
+    case 'object':
       return node.properties.length === 0
         ? '{}'
         : concat([
@@ -47,31 +47,27 @@ function genericPrint(
             hardline,
             '}',
           ]);
-    case 'ObjectProperty':
+    case 'object property':
       return concat([path.call(print, 'key'), ': ', path.call(print, 'value')]);
-    case 'UnaryExpression':
-      return concat([node.operator === '+' ? '' : node.operator, path.call(print, 'argument')]);
-    case 'NullLiteral':
+    case 'null':
       return 'null';
-    case 'BooleanLiteral':
-      return node.value ? 'true' : 'false';
-    case 'StringLiteral':
-    case 'NumericLiteral':
+    case 'true':
+      return 'true';
+    case 'false':
+      return 'false';
+    case 'string':
+    case 'number':
+    case 'identifier':
       return JSON.stringify(node.value);
-    case 'Identifier':
-      return JSON.stringify(node.name);
     default:
       /* istanbul ignore next */
       throw new Error('unknown type: ' + JSON.stringify((node as Node).type));
   }
 }
 
-function clean(node: Node, newNode: Node /*, parent*/) {
-  if (node.type === 'Identifier') {
-    return {type: 'StringLiteral', value: node.name};
-  }
-  if (node.type === 'UnaryExpression' && node.operator === '+') {
-    return (newNode as typeof node).argument;
+function clean(node: Node /*, newNode: Node, parent*/): Node | void {
+  if (node.type === 'identifier') {
+    return {...node, type: 'string'};
   }
 
   return;

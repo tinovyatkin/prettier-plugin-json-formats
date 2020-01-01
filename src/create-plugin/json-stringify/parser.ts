@@ -1,7 +1,6 @@
-import {parsers} from 'prettier/parser-babylon';
 import {Parser} from 'prettier';
 
-const baseParser = parsers['json-stringify'];
+import {parser as baseParser} from '../parser';
 
 export function createParser(astFormat: string): Parser {
   return {

@@ -49,5 +49,6 @@
     "@typescript-eslint/unified-signatures": "warn"
   },
 
-  "reportUnusedDisableDirectives": true
+  "reportUnusedDisableDirectives": true,
+  "no-constant-condition": ["error", {"checkLoops": false}]
 }
