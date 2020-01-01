@@ -1,5 +1,6 @@
+import {JsonFlags} from '../flags';
+
 import {
-  ParserFlags,
   ParserContext,
   supportLaxNumbers,
   supportNumberConstants,
@@ -99,7 +100,7 @@ function appendTrailingComments(node: BaseValueNode, comments: Comment[] | undef
   }
 }
 
-export function parseJson(text: string, flags: ParserFlags): Expression {
+export function parseJson(text: string, flags: JsonFlags): Expression {
   const context = {
     position: {column: 0, line: 0, offset: 0},
     previousPosition: {column: 0, line: 0, offset: 0},
