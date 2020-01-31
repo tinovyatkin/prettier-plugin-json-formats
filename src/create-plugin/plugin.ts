@@ -1,6 +1,7 @@
 import {SupportLanguage, Parser, Printer, SupportOption} from 'prettier';
 
 import {createPrinter as createJsonStringifyPrinter} from './printers/json-stringify';
+import {createPrinter as createJsonPrinter} from './printers/json';
 import {JsonFlags} from './flags';
 import {AstModifier} from './interfaces';
 import {createParser} from './parser';
@@ -9,6 +10,7 @@ type PrinterFactory = (modifier: AstModifier, flags: JsonFlags) => Printer;
 
 const createPrinter = new Map<string, PrinterFactory>();
 createPrinter.set('json-stringify', createJsonStringifyPrinter);
+createPrinter.set('json', createJsonPrinter);
 
 export type CustomLanguage = Omit<SupportLanguage, 'parsers'>;
 
@@ -30,14 +32,14 @@ export interface JsonPluginInput {
 
   parserFlags?: JsonFlags;
 
-  printer?: 'json-stringify';
+  printer?: 'json-stringify' | 'json';
 }
 
 export function createJsonPlugin({
   language,
   modifier,
   flags = JsonFlags.Loose,
-  parserFlags = flags,
+  parserFlags = JsonFlags.Loose,
   printer = 'json-stringify',
 }: JsonPluginInput): JsonPlugin {
   const astFormat = language.name;

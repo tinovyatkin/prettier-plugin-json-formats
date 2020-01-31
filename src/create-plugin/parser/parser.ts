@@ -19,13 +19,13 @@ import {
   Position,
   TrueLiteral,
   FalseLiteral,
-  BaseValueNode,
   SingleLineComment,
   MultiLineComment,
   ArrayExpression,
   ObjectExpression,
   ObjectProperty,
   Identifier,
+  Node,
 } from './nodes';
 import {JsonArray, JsonObject} from './values';
 
@@ -94,10 +94,52 @@ function assert(context: ParserContext, supports: (context: ParserContext) => bo
   }
 }
 
-function appendTrailingComments(node: BaseValueNode, comments: Comment[] | undefined) {
+function appendTrailingComments<T extends Node>(node: T, comments: Comment[] | undefined): T {
   if (comments != null) {
     node.trailingComments = [...(node.trailingComments || []), ...comments];
+
+    for (const comment of comments) {
+      comment.precedingNode = node;
+    }
   }
+
+  return node;
+}
+
+function setLeadingComments<T extends Node>(node: T, leadingComments: Comment[] | undefined): T {
+  if (leadingComments != null) {
+    node.leadingComments = leadingComments;
+
+    for (const comment of leadingComments) {
+      comment.followingNode = node;
+    }
+  }
+
+  return node;
+}
+
+function setInnerComments<T extends ArrayExpression | ObjectExpression>(
+  node: T,
+  leadingInnerComments: Comment[] | undefined,
+  trailingInnerComments: Comment[] | undefined,
+): T {
+  if (leadingInnerComments != null) {
+    node.leadingInnerComments = leadingInnerComments;
+
+    for (const comment of leadingInnerComments) {
+      comment.enclosingNode = node;
+    }
+  }
+
+  if (trailingInnerComments != null) {
+    node.trailingInnerComments = trailingInnerComments;
+
+    for (const comment of trailingInnerComments) {
+      comment.enclosingNode = node;
+    }
+  }
+
+  return node;
 }
 
 export function parseJson(text: string, flags: JsonFlags): Expression {
@@ -462,7 +504,7 @@ function parseSingleLineComment(context: ParserContext): SingleLineComment {
     start,
     end: context.position,
     comment,
-    rawText: `//${context}`,
+    rawText: `//${comment}`,
   };
 }
 
@@ -471,7 +513,7 @@ function parseMultiLineComment(context: ParserContext): MultiLineComment {
 
   const start = context.position;
 
-  while (peek(context) !== '*' && peek(context, 1) !== '/') {
+  while (peek(context) && (peek(context) !== '*' || peek(context, 1) !== '/')) {
     next(context);
   }
 
@@ -556,25 +598,34 @@ function tryParseArrayExpression(
   const start = context.position;
   pop(context);
 
-  const leadingInnerComments = parseCommentsUntilBlankLine(context);
+  let leadingInnerComments = parseCommentsUntilBlankLine(context);
   let leadingElementComments = parseComments(context);
+
+  if (!leadingElementComments) {
+    leadingElementComments = leadingInnerComments;
+    leadingInnerComments = undefined;
+  }
 
   if (peek(context) === ']') {
     pop(context);
     // empty array
-    return {
-      type: 'array',
-      elements: [],
-      start,
-      end: context.position,
-      rawText: context.text.slice(start.offset, context.position.offset),
-      value: [],
-      leadingComments,
-      leadingInnerComments:
-        leadingInnerComments || leadingElementComments
-          ? [...(leadingInnerComments || []), ...(leadingElementComments || [])]
-          : undefined,
-    };
+    return setInnerComments(
+      setLeadingComments(
+        {
+          type: 'array',
+          elements: [],
+          start,
+          end: context.position,
+          rawText: context.text.slice(start.offset, context.position.offset),
+          value: [],
+        },
+        leadingComments,
+      ),
+      leadingInnerComments || leadingElementComments
+        ? [...(leadingInnerComments || []), ...(leadingElementComments || [])]
+        : undefined,
+      undefined,
+    );
   }
 
   const elements: Expression[] = [];
@@ -615,17 +666,21 @@ function tryParseArrayExpression(
 
   next(context);
 
-  return {
-    type: 'array',
-    start,
-    end: context.position,
-    rawText: context.text.slice(start.offset, context.position.offset),
-    elements,
-    value,
-    leadingComments,
+  return setInnerComments(
+    setLeadingComments(
+      {
+        type: 'array',
+        start,
+        end: context.position,
+        rawText: context.text.slice(start.offset, context.position.offset),
+        elements,
+        value,
+      },
+      leadingComments,
+    ),
     leadingInnerComments,
-    trailingInnerComments: leadingElementComments,
-  };
+    leadingElementComments,
+  );
 }
 
 function tryParseObjectExpression(
@@ -639,25 +694,34 @@ function tryParseObjectExpression(
   const start = context.position;
   pop(context);
 
-  const leadingInnerComments = parseCommentsUntilBlankLine(context);
+  let leadingInnerComments = parseCommentsUntilBlankLine(context);
   let leadingElementComments = parseComments(context);
+
+  if (!leadingElementComments) {
+    leadingElementComments = leadingInnerComments;
+    leadingInnerComments = undefined;
+  }
 
   if (peek(context) === '}') {
     pop(context);
     // empty object
-    return {
-      type: 'object',
-      properties: [],
-      start,
-      end: context.position,
-      rawText: context.text.slice(start.offset, context.position.offset),
-      value: {},
-      leadingComments,
-      leadingInnerComments:
-        leadingInnerComments || leadingElementComments
-          ? [...(leadingInnerComments || []), ...(leadingElementComments || [])]
-          : undefined,
-    };
+    return setInnerComments(
+      setLeadingComments(
+        {
+          type: 'object',
+          properties: [],
+          start,
+          end: context.position,
+          rawText: context.text.slice(start.offset, context.position.offset),
+          value: {},
+        },
+        leadingComments,
+      ),
+      leadingInnerComments || leadingElementComments
+        ? [...(leadingInnerComments || []), ...(leadingElementComments || [])]
+        : undefined,
+      undefined,
+    );
   }
 
   const properties: ObjectProperty[] = [];
@@ -698,17 +762,21 @@ function tryParseObjectExpression(
 
   next(context);
 
-  return {
-    type: 'object',
-    start,
-    end: context.position,
-    rawText: context.text.slice(start.offset, context.position.offset),
-    properties,
-    value,
-    leadingComments,
+  return setInnerComments(
+    setLeadingComments(
+      {
+        type: 'object',
+        start,
+        end: context.position,
+        rawText: context.text.slice(start.offset, context.position.offset),
+        properties,
+        value,
+      },
+      leadingComments,
+    ),
     leadingInnerComments,
-    trailingInnerComments: leadingElementComments,
-  };
+    leadingElementComments,
+  );
 }
 
 function parseObjectProperty(context: ParserContext, leadingComments?: Comment[]): ObjectProperty {
@@ -726,15 +794,17 @@ function parseObjectProperty(context: ParserContext, leadingComments?: Comment[]
 
   const value = parseExpression(context, parseComments(context));
 
-  return {
-    type: 'object property',
-    start,
-    end: context.position,
-    rawText: context.text.slice(start.offset, context.position.offset),
-    key,
-    value,
+  return setLeadingComments(
+    {
+      type: 'object property',
+      start,
+      end: context.position,
+      rawText: context.text.slice(start.offset, context.position.offset),
+      key,
+      value,
+    },
     leadingComments,
-  };
+  );
 }
 
 function tryParseIdentifier(
@@ -770,12 +840,14 @@ function tryParseIdentifier(
 
   const value = context.text.slice(start.offset, context.position.offset);
 
-  return {
-    type: 'identifier',
-    start,
-    end: context.position,
-    rawText: value,
-    value,
+  return setLeadingComments(
+    {
+      type: 'identifier',
+      start,
+      end: context.position,
+      rawText: value,
+      value,
+    },
     leadingComments,
-  };
+  );
 }

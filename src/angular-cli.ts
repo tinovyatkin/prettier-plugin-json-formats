@@ -1,13 +1,14 @@
 import {
-  createJsonPlugin,
-  getPropertyKeys,
-  JsonPlugin,
-  replacePropertyValue,
-  sortObjectProperties,
   combine,
-  replacePropertyValues,
-  renameProperty,
+  createJsonPlugin,
   deepSortObjectProperties,
+  getPropertyKeys,
+  JsonFlags,
+  JsonPlugin,
+  renameProperty,
+  replacePropertyValue,
+  replacePropertyValues,
+  sortObjectProperties,
 } from './create-plugin';
 import {ParserOptions} from 'prettier';
 
@@ -18,6 +19,11 @@ interface AngularCliParserOptions extends ParserOptions {
 
 const plugin = createJsonPlugin({
   language: {name: 'angular-cli'},
+
+  printer: 'json',
+  flags: JsonFlags.CommentsAllowed,
+  parserFlags: JsonFlags.CommentsAllowed,
+
   modifier: combine(
     sortObjectProperties(['$schema', 'version', 'newProjectRoot', 'projects', 'cli', 'schematics']),
 

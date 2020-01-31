@@ -16,11 +16,19 @@ export interface BaseNode {
 export interface SingleLineComment extends BaseNode {
   type: 'single line comment';
   comment: string;
+
+  precedingNode?: Node;
+  enclosingNode?: ArrayExpression | ObjectExpression;
+  followingNode?: Node;
 }
 
 export interface MultiLineComment extends BaseNode {
   type: 'multi-line comment';
   comment: string;
+
+  precedingNode?: Node;
+  enclosingNode?: ArrayExpression | ObjectExpression;
+  followingNode?: Node;
 }
 
 export type Comment = SingleLineComment | MultiLineComment;
@@ -92,4 +100,4 @@ export type Literal =
   | StringLiteral
   | TrueLiteral;
 export type Expression = ArrayExpression | ObjectExpression | Literal;
-export type Node = Expression | Comment | ObjectProperty;
+export type Node = Expression | ObjectProperty;

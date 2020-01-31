@@ -16,7 +16,8 @@
   },
   "main": "index.js",
   "dependencies": {
-    "@types/prettier": "1.19.0"
+    "@types/prettier": "1.19.0",
+    "esutils": "2.0.3"
   },
   "peerDependencies": {
     "prettier": "^1.19.1"
