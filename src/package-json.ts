@@ -102,7 +102,9 @@ export const packageJsonPlugin = createJsonPlugin({
       'bundleDependencies',
       'optionalDependencies',
       'peerDependencies',
+      'peerDependenciesMeta',
       'devDependencies',
+      'dependenciesMeta',
 
       'engines',
       'publishConfig',
