@@ -51,12 +51,16 @@ export function printComment(
         return printIndentableBlockComment(comment);
       }
 
-      return '/*' + comment.comment + '*/' + (ensureSafeForContentAfter ? ' ' : '');
+      return (
+        '/*' + comment.comment + '*/' + (ensureSafeForContentAfter ? ' ' : '')
+      );
     }
     case 'single line comment':
       return concat([
         // Print shebangs with the proper comment characters
-        options.originalText.slice(options.locStart(comment)).startsWith('#!') ? '#!' : '// ',
+        options.originalText.slice(options.locStart(comment)).startsWith('#!')
+          ? '#!'
+          : '// ',
         comment.comment.trim(),
         ensureSafeForContentAfter ? hardline : '',
       ]);
@@ -65,7 +69,10 @@ export function printComment(
   }
 }
 
-export function printLeadingComment(commentPath: FastPath<Comment>, options: ParserOptions): Doc {
+export function printLeadingComment(
+  commentPath: FastPath<Comment>,
+  options: ParserOptions,
+): Doc {
   const comment = commentPath.getValue();
   const contents = printComment(commentPath, options);
   if (!contents) {
@@ -91,7 +98,11 @@ export function printTrailingComment(
   ensureSafeForContentAfter = false,
 ) {
   const comment = commentPath.getValue();
-  const contents = printComment(commentPath, options, ensureSafeForContentAfter);
+  const contents = printComment(
+    commentPath,
+    options,
+    ensureSafeForContentAfter,
+  );
   if (!contents) {
     return '';
   }
@@ -114,18 +125,31 @@ export function printTrailingComment(
     // if this a comment on its own line; normal trailing comments are
     // always at the end of another expression.
 
-    const isLineBeforeEmpty = isPreviousLineEmpty(options.originalText, comment, options.locStart);
+    const isLineBeforeEmpty = isPreviousLineEmpty(
+      options.originalText,
+      comment,
+      options.locStart,
+    );
 
-    return lineSuffix(concat([hardline, isLineBeforeEmpty ? hardline : '', contents]));
+    return lineSuffix(
+      concat([hardline, isLineBeforeEmpty ? hardline : '', contents]),
+    );
   } else if (isBlock) {
     // Trailing block comments never need a newline
     return concat([' ', contents]);
   }
 
-  return concat([lineSuffix(concat([' ', contents])), !isBlock ? breakParent : '']);
+  return concat([
+    lineSuffix(concat([' ', contents])),
+    !isBlock ? breakParent : '',
+  ]);
 }
 
-function prependCursorPlaceholder(path: FastPath, options: ParserOptions, printed: Doc): Doc {
+function prependCursorPlaceholder(
+  path: FastPath,
+  options: ParserOptions,
+  printed: Doc,
+): Doc {
   if (path.getNode() === (options as any).cursorNode && path.getValue()) {
     return concat([cursor, printed, cursor]);
   }
@@ -144,7 +168,10 @@ export function printComments(
   const value = path.getValue();
   const printed = print(path);
 
-  if (!value || (isEmpty(value.leadingComments) && isEmpty(value.trailingComments))) {
+  if (
+    !value ||
+    (isEmpty(value.leadingComments) && isEmpty(value.trailingComments))
+  ) {
     return prependCursorPlaceholder(path, options, printed);
   }
 
@@ -169,5 +196,9 @@ export function printComments(
     ),
   ];
 
-  return prependCursorPlaceholder(path, options, concat(leadingParts.concat(trailingParts)));
+  return prependCursorPlaceholder(
+    path,
+    options,
+    concat(leadingParts.concat(trailingParts)),
+  );
 }

@@ -1,12 +1,24 @@
 import {doc, Doc, FastPath, Printer, ParserOptions, util} from 'prettier';
-import {Node, Expression, ObjectProperty, StringLiteral, Identifier} from '../parser';
+import {
+  Node,
+  Expression,
+  ObjectProperty,
+  StringLiteral,
+  Identifier,
+} from '../parser';
 import {AstModifier} from '../interfaces';
 import {JsonFlags} from '../flags';
-import {printLeadingComment, printTrailingComment, printComment} from './comment';
+import {
+  printLeadingComment,
+  printTrailingComment,
+  printComment,
+} from './comment';
 import {hasLeadingOwnLineComment, hasTrailingComment} from './utils';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const isIdentifierName = require('esutils').keyword.isIdentifierNameES5 as (str: string) => boolean;
+const isIdentifierName = require('esutils').keyword.isIdentifierNameES5 as (
+  str: string,
+) => boolean;
 
 const {concat, hardline, indent, join} = doc.builders;
 const {makeString} = util;
@@ -19,7 +31,10 @@ type ExtendedNode =
     };
 
 function shouldPrintComma(options: ParserOptions, flags: JsonFlags) {
-  return (flags & JsonFlags.TrailingCommasAllowed) !== 0 && options.trailingComma !== 'none';
+  return (
+    (flags & JsonFlags.TrailingCommasAllowed) !== 0 &&
+    options.trailingComma !== 'none'
+  );
 }
 
 function createPreprocessor(modifier: AstModifier) {
@@ -33,7 +48,9 @@ function printNumber(rawNumber: string, flags: JsonFlags) {
   rawNumber = rawNumber.toLowerCase();
 
   if ((flags & JsonFlags.HexadecimalNumberAllowed) === 0) {
-    rawNumber = rawNumber.replace(/0x([0-9a-f]+)/, (_, hex) => Number.parseInt(hex, 16).toString());
+    rawNumber = rawNumber.replace(/0x([0-9a-f]+)/, (_, hex) =>
+      Number.parseInt(hex, 16).toString(),
+    );
   }
 
   if ((flags & JsonFlags.LaxNumberParsingAllowed) === 0) {
@@ -68,17 +85,27 @@ function getPreferredQuote(rawContent: string, prefersSingleQuote: boolean) {
   // If `rawContent` contains at least one of the quote preferred for enclosing
   // the string, we might want to enclose with the alternate quote instead, to
   // minimize the number of escaped quotes.
-  if (rawContent.includes(preferred.quote) || rawContent.includes(alternate.quote)) {
+  if (
+    rawContent.includes(preferred.quote) ||
+    rawContent.includes(alternate.quote)
+  ) {
     const numPreferredQuotes = (rawContent.match(preferred.regex) || []).length;
     const numAlternateQuotes = (rawContent.match(alternate.regex) || []).length;
 
-    result = numPreferredQuotes > numAlternateQuotes ? alternate.quote : preferred.quote;
+    result =
+      numPreferredQuotes > numAlternateQuotes
+        ? alternate.quote
+        : preferred.quote;
   }
 
   return result;
 }
 
-function printString(rawContent: string, {singleQuote}: ParserOptions, flags: JsonFlags): Doc {
+function printString(
+  rawContent: string,
+  {singleQuote}: ParserOptions,
+  flags: JsonFlags,
+): Doc {
   // `rawContent` is the string exactly like it appeared in the input source
   // code, without its enclosing quotes.
   const enclosingQuote =
@@ -122,15 +149,23 @@ function printPropertyKey(
   options: ParserOptions,
 ): Doc {
   if (hasTrailingComment(leftNode)) {
-    return indent(concat([printedLeft, printTrailingComment(null!, options, true)]));
+    return indent(
+      concat([printedLeft, printTrailingComment(null!, options, true)]),
+    );
   }
 
   return concat([printedLeft]);
 }
 
-function printPropertyValue(rightNode: Expression, printedRight: Doc, options: ParserOptions): Doc {
+function printPropertyValue(
+  rightNode: Expression,
+  printedRight: Doc,
+  options: ParserOptions,
+): Doc {
   if (hasLeadingOwnLineComment(options.originalText, rightNode, options)) {
-    return indent(concat([hardline, printLeadingComment(null!, options), printedRight]));
+    return indent(
+      concat([hardline, printLeadingComment(null!, options), printedRight]),
+    );
   }
 
   return concat([' ', printedRight]);
@@ -161,7 +196,12 @@ function printObjectProperty(
   ]);
 }
 
-function printWithComments(path: FastPath, options: ParserOptions, printed: Doc, flags: JsonFlags) {
+function printWithComments(
+  path: FastPath,
+  options: ParserOptions,
+  printed: Doc,
+  flags: JsonFlags,
+) {
   const node = path.getNode() as Expression | ObjectProperty;
 
   if (!node || (flags & JsonFlags.CommentsAllowed) === 0) {
@@ -172,7 +212,10 @@ function printWithComments(path: FastPath, options: ParserOptions, printed: Doc,
     ? concat([
         join(
           hardline,
-          path.map(node => printLeadingComment(node, options), 'leadingComments'),
+          path.map(
+            node => printLeadingComment(node, options),
+            'leadingComments',
+          ),
         ),
         hardline,
       ])
@@ -180,7 +223,10 @@ function printWithComments(path: FastPath, options: ParserOptions, printed: Doc,
   const suffix = node.trailingComments
     ? join(
         hardline,
-        path.map(node => printTrailingComment(node, options), 'trailingComments'),
+        path.map(
+          node => printTrailingComment(node, options),
+          'trailingComments',
+        ),
       )
     : '';
 
@@ -188,12 +234,19 @@ function printWithComments(path: FastPath, options: ParserOptions, printed: Doc,
 }
 
 function createGenericPrint(flags: JsonFlags) {
-  return (path: FastPath, options: ParserOptions, print: (node: FastPath) => Doc): Doc => {
+  return (
+    path: FastPath,
+    options: ParserOptions,
+    print: (node: FastPath) => Doc,
+  ): Doc => {
     const node: ExtendedNode = path.getValue();
     switch (node.type) {
       case 'JsonRoot':
         return concat([
-          path.call(p => printWithComments(p, options, print(p), flags), 'node'),
+          path.call(
+            p => printWithComments(p, options, print(p), flags),
+            'node',
+          ),
           hardline,
         ]);
       case 'array': {
@@ -202,7 +255,10 @@ function createGenericPrint(flags: JsonFlags) {
               hardline,
               join(
                 hardline,
-                path.map(commentPath => printComment(commentPath, options), 'leadingInnerComments'),
+                path.map(
+                  commentPath => printComment(commentPath, options),
+                  'leadingInnerComments',
+                ),
               ),
             ])
           : '';
@@ -247,7 +303,8 @@ function createGenericPrint(flags: JsonFlags) {
           const elementNode = element.getNode();
           const printedNode = print(element);
 
-          const addComma = i < node.elements.length - 1 || shouldPrintComma(options, flags);
+          const addComma =
+            i < node.elements.length - 1 || shouldPrintComma(options, flags);
 
           const printed = printWithComments(
             element,
@@ -255,8 +312,12 @@ function createGenericPrint(flags: JsonFlags) {
             addComma ? concat([printedNode, ',']) : printedNode,
             flags,
           );
-          const hasLeadingComments = !!(elementNode && elementNode.leadingComments);
-          const hasTrailingComments = !!(elementNode && elementNode.trailingComments);
+          const hasLeadingComments = !!(
+            elementNode && elementNode.leadingComments
+          );
+          const hasTrailingComments = !!(
+            elementNode && elementNode.trailingComments
+          );
 
           return {printed, hasLeadingComments, hasTrailingComments};
         }, 'elements');
@@ -275,7 +336,10 @@ function createGenericPrint(flags: JsonFlags) {
         }
 
         for (let i = 1; i < elements.length; i++) {
-          if (elements[i - 1].hasTrailingComments && elements[i].hasLeadingComments) {
+          if (
+            elements[i - 1].hasTrailingComments &&
+            elements[i].hasLeadingComments
+          ) {
             content.push(hardline);
           }
 
@@ -300,7 +364,10 @@ function createGenericPrint(flags: JsonFlags) {
               hardline,
               join(
                 hardline,
-                path.map(commentPath => printComment(commentPath, options), 'leadingInnerComments'),
+                path.map(
+                  commentPath => printComment(commentPath, options),
+                  'leadingInnerComments',
+                ),
               ),
             ])
           : '';
@@ -345,7 +412,8 @@ function createGenericPrint(flags: JsonFlags) {
           const propertyNode = element.getNode();
           const printedNode = print(element);
 
-          const addComma = i < node.properties.length - 1 || shouldPrintComma(options, flags);
+          const addComma =
+            i < node.properties.length - 1 || shouldPrintComma(options, flags);
 
           const printed = printWithComments(
             element,
@@ -353,8 +421,12 @@ function createGenericPrint(flags: JsonFlags) {
             addComma ? concat([printedNode, ',']) : printedNode,
             flags,
           );
-          const hasLeadingComments = !!(propertyNode && propertyNode.leadingComments);
-          const hasTrailingComments = !!(propertyNode && propertyNode.trailingComments);
+          const hasLeadingComments = !!(
+            propertyNode && propertyNode.leadingComments
+          );
+          const hasTrailingComments = !!(
+            propertyNode && propertyNode.trailingComments
+          );
 
           return {printed, hasLeadingComments, hasTrailingComments};
         }, 'properties');
@@ -373,7 +445,10 @@ function createGenericPrint(flags: JsonFlags) {
         }
 
         for (let i = 1; i < properties.length; i++) {
-          if (properties[i - 1].hasTrailingComments && properties[i].hasLeadingComments) {
+          if (
+            properties[i - 1].hasTrailingComments &&
+            properties[i].hasLeadingComments
+          ) {
             content.push(hardline);
           }
 
@@ -393,7 +468,13 @@ function createGenericPrint(flags: JsonFlags) {
         return concat(['{', indent(concat(content)), hardline, '}']);
       }
       case 'object property':
-        return printObjectProperty(path, options, /* TODO */ true, flags, print);
+        return printObjectProperty(
+          path,
+          options,
+          /* TODO */ true,
+          flags,
+          print,
+        );
       case 'null':
         return 'null';
       case 'true':
@@ -411,7 +492,10 @@ function createGenericPrint(flags: JsonFlags) {
   };
 }
 
-export function createPrinter(modifier: AstModifier, flags: JsonFlags): Printer {
+export function createPrinter(
+  modifier: AstModifier,
+  flags: JsonFlags,
+): Printer {
   return {
     preprocess: createPreprocessor(modifier),
     print: createGenericPrint(flags),

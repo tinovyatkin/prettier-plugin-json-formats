@@ -13,15 +13,31 @@ export interface ParserContext {
   readonly flags: JsonFlags;
 }
 
-function createFlagSwitch(flag: JsonFlags): (context: ParserContext) => boolean {
+function createFlagSwitch(
+  flag: JsonFlags,
+): (context: ParserContext) => boolean {
   return context => (context.flags & flag) != 0;
 }
 
 export const supportComments = createFlagSwitch(JsonFlags.CommentsAllowed);
-export const supportHexadecimalNumbers = createFlagSwitch(JsonFlags.HexadecimalNumberAllowed);
-export const supportIdentifiers = createFlagSwitch(JsonFlags.IdentifierKeyNamesAllowed);
-export const supportLaxNumbers = createFlagSwitch(JsonFlags.LaxNumberParsingAllowed);
-export const supportMultilineStrings = createFlagSwitch(JsonFlags.MultiLineStringAllowed);
-export const supportNumberConstants = createFlagSwitch(JsonFlags.NumberConstantsAllowed);
-export const supportSingleQuotes = createFlagSwitch(JsonFlags.SingleQuotesAllowed);
-export const supportTrailingCommas = createFlagSwitch(JsonFlags.TrailingCommasAllowed);
+export const supportHexadecimalNumbers = createFlagSwitch(
+  JsonFlags.HexadecimalNumberAllowed,
+);
+export const supportIdentifiers = createFlagSwitch(
+  JsonFlags.IdentifierKeyNamesAllowed,
+);
+export const supportLaxNumbers = createFlagSwitch(
+  JsonFlags.LaxNumberParsingAllowed,
+);
+export const supportMultilineStrings = createFlagSwitch(
+  JsonFlags.MultiLineStringAllowed,
+);
+export const supportNumberConstants = createFlagSwitch(
+  JsonFlags.NumberConstantsAllowed,
+);
+export const supportSingleQuotes = createFlagSwitch(
+  JsonFlags.SingleQuotesAllowed,
+);
+export const supportTrailingCommas = createFlagSwitch(
+  JsonFlags.TrailingCommasAllowed,
+);

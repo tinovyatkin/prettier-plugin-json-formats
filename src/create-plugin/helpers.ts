@@ -27,11 +27,15 @@ export function combine(...fns: AstModifier[]): AstModifier {
   return (node, opts) => fns.reduce((node, fn) => fn(node, opts), node);
 }
 
-export function ifObjectExpression(fn: AstModifier<ObjectExpression, Expression>): AstModifier {
+export function ifObjectExpression(
+  fn: AstModifier<ObjectExpression, Expression>,
+): AstModifier {
   return (node, opts) => (isObjectExpression(node) ? fn(node, opts) : node);
 }
 
-export function ifArrayExpression(fn: AstModifier<ArrayExpression, Expression>): AstModifier {
+export function ifArrayExpression(
+  fn: AstModifier<ArrayExpression, Expression>,
+): AstModifier {
   return (node, opts) => (isArrayExpression(node) ? fn(node, opts) : node);
 }
 
@@ -56,20 +60,32 @@ export const replacePropertyValues = (
   ) => Expression,
 ) =>
   replaceProperties((properties, opts, node) =>
-    properties.map(prop => ({...prop, value: replacer(prop.value, opts, getKey(prop), node)})),
+    properties.map(prop => ({
+      ...prop,
+      value: replacer(prop.value, opts, getKey(prop), node),
+    })),
   );
 
 export const replacePropertyValue = (
   key: string,
-  replacer: (prop: Expression, opts: ParserOptions, node: ObjectExpression) => Expression,
+  replacer: (
+    prop: Expression,
+    opts: ParserOptions,
+    node: ObjectExpression,
+  ) => Expression,
 ) =>
   replaceProperties((properties, opts, node) =>
     properties.map(prop =>
-      getKey(prop) === key ? {...prop, value: replacer(prop.value, opts, node)} : prop,
+      getKey(prop) === key
+        ? {...prop, value: replacer(prop.value, opts, node)}
+        : prop,
     ),
   );
 
-export function getProperty(node: ObjectExpression, key: string): ObjectProperty | undefined {
+export function getProperty(
+  node: ObjectExpression,
+  key: string,
+): ObjectProperty | undefined {
   return node.properties.find(prop => getKey(prop) === key);
 }
 
@@ -98,7 +114,9 @@ export const renameProperty = (oldKey: string, newKey: string) =>
   );
 
 export const sortObjectProperties = (
-  order?: string[] | ((node: ObjectExpression, opts: ParserOptions) => string[] | undefined),
+  order?:
+    | string[]
+    | ((node: ObjectExpression, opts: ParserOptions) => string[] | undefined),
 ) =>
   replaceProperties((properties, opts, node) => {
     const actualOrder =
@@ -108,7 +126,9 @@ export const sortObjectProperties = (
       ...properties
         .filter(prop => actualOrder.includes(getKey(prop)))
         .sort((a, b) => {
-          return actualOrder.indexOf(getKey(a)) - actualOrder.indexOf(getKey(b));
+          return (
+            actualOrder.indexOf(getKey(a)) - actualOrder.indexOf(getKey(b))
+          );
         }),
 
       ...properties
@@ -129,11 +149,15 @@ export const sortObjectProperties = (
   });
 
 export function deepSortObjectProperties(
-  order?: string[] | ((node: ObjectExpression, opts: ParserOptions) => string[] | undefined),
+  order?:
+    | string[]
+    | ((node: ObjectExpression, opts: ParserOptions) => string[] | undefined),
 ) {
   const deepSort = combine(
     sortObjectProperties(order),
-    replacePropertyValues((node, opts) => (isObjectExpression(node) ? deepSort(node, opts) : node)),
+    replacePropertyValues((node, opts) =>
+      isObjectExpression(node) ? deepSort(node, opts) : node,
+    ),
   );
 
   return deepSort;

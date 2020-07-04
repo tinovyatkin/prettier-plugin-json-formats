@@ -69,7 +69,10 @@ function next(context: ParserContext) {
   context.position = {offset, line, column};
 }
 
-function consume(context: ParserContext, ...allowedCharactersArr: [string, ...string[]]) {
+function consume(
+  context: ParserContext,
+  ...allowedCharactersArr: [string, ...string[]]
+) {
   const consumedCharacters: string[] = [];
 
   for (const allowedCharacters of allowedCharactersArr) {
@@ -88,13 +91,19 @@ function consume(context: ParserContext, ...allowedCharactersArr: [string, ...st
   return consumedCharacters.join('');
 }
 
-function assert(context: ParserContext, supports: (context: ParserContext) => boolean) {
+function assert(
+  context: ParserContext,
+  supports: (context: ParserContext) => boolean,
+) {
   if (!supports(context)) {
     throw new InvalidJsonError('Invalid character', context);
   }
 }
 
-function appendTrailingComments<T extends Node>(node: T, comments: Comment[] | undefined): T {
+function appendTrailingComments<T extends Node>(
+  node: T,
+  comments: Comment[] | undefined,
+): T {
   if (comments != null) {
     node.trailingComments = [...(node.trailingComments || []), ...comments];
 
@@ -106,7 +115,10 @@ function appendTrailingComments<T extends Node>(node: T, comments: Comment[] | u
   return node;
 }
 
-function setLeadingComments<T extends Node>(node: T, leadingComments: Comment[] | undefined): T {
+function setLeadingComments<T extends Node>(
+  node: T,
+  leadingComments: Comment[] | undefined,
+): T {
   if (leadingComments != null) {
     node.leadingComments = leadingComments;
 
@@ -158,13 +170,19 @@ export function parseJson(text: string, flags: JsonFlags): Expression {
   if (!isEOF(context)) {
     const rest = text.slice(context.position.offset);
     const prettyRest = rest.length > 20 ? `${rest.substr(0, 20)}...` : rest;
-    throw new InvalidJsonError(`Expected end of file, got "${prettyRest}"`, context);
+    throw new InvalidJsonError(
+      `Expected end of file, got "${prettyRest}"`,
+      context,
+    );
   }
 
   return node;
 }
 
-function parseExpression(context: ParserContext, leadingComments?: Comment[]): Expression {
+function parseExpression(
+  context: ParserContext,
+  leadingComments?: Comment[],
+): Expression {
   if (peek(context) == null) {
     throw new InvalidJsonError('Unexpected end of file', context);
   }
@@ -212,13 +230,23 @@ function tryParseNumberLiteral(
     case 'I':
       assert(context, supportNumberConstants);
       consume(context, 'I', 'n', 'f', 'i', 'n', 'i', 't', 'y');
-      return createNumberLiteral(context, start, sign * Infinity, leadingComments);
+      return createNumberLiteral(
+        context,
+        start,
+        sign * Infinity,
+        leadingComments,
+      );
     case '0':
       if (peek(context) === 'x') {
         assert(context, supportHexadecimalNumbers);
         next(context);
         next(context);
-        return parseHexadecimalNumberLiteral(context, sign, start, leadingComments);
+        return parseHexadecimalNumberLiteral(
+          context,
+          sign,
+          start,
+          leadingComments,
+        );
       }
 
       return parseRegularNumberLiteral(context, sign, start, leadingComments);
@@ -417,7 +445,11 @@ function tryParseStringLiteral(
           characters.push('\t');
           break;
         case 'u':
-          characters.push(String.fromCharCode(parseInt(consume(context, HEX, HEX, HEX, HEX), 16)));
+          characters.push(
+            String.fromCharCode(
+              parseInt(consume(context, HEX, HEX, HEX, HEX), 16),
+            ),
+          );
           break;
 
         case undefined:
@@ -434,7 +466,13 @@ function tryParseStringLiteral(
       }
     } else if (char === undefined) {
       throw new InvalidJsonError('Unexpected end of file', context);
-    } else if (char == '\b' || char == '\f' || char == '\n' || char == '\r' || char == '\t') {
+    } else if (
+      char == '\b' ||
+      char == '\f' ||
+      char == '\n' ||
+      char == '\r' ||
+      char == '\t'
+    ) {
       throw new InvalidJsonError('Invalid character', context);
     } else {
       characters.push(char);
@@ -464,10 +502,9 @@ function tryParseKeywordLiteral(
       return null;
   }
 
-  function createKeywordLiteral<T extends TrueLiteral | FalseLiteral | NullLiteral>(
-    type: T['type'],
-    value: T['value'],
-  ): T {
+  function createKeywordLiteral<
+    T extends TrueLiteral | FalseLiteral | NullLiteral
+  >(type: T['type'], value: T['value']): T {
     return {
       type,
       start,
@@ -482,7 +519,13 @@ function tryParseKeywordLiteral(
 function skipBlanks(context: ParserContext) {
   let char = peek(context);
 
-  while (char == ' ' || char == '\t' || char == '\n' || char == '\r' || char == '\f') {
+  while (
+    char == ' ' ||
+    char == '\t' ||
+    char == '\n' ||
+    char == '\r' ||
+    char == '\f'
+  ) {
     next(context);
     char = peek(context);
   }
@@ -493,7 +536,10 @@ function parseSingleLineComment(context: ParserContext): SingleLineComment {
 
   const start = context.position;
 
-  while (context.position.column > 0 && context.position.offset < context.text.length) {
+  while (
+    context.position.column > 0 &&
+    context.position.offset < context.text.length
+  ) {
     next(context);
   }
 
@@ -565,7 +611,10 @@ function parseCommentsUntilBlankLine(
   }
 }
 
-function parseComments(context: ParserContext, comments?: Comment[]): Comment[] | undefined {
+function parseComments(
+  context: ParserContext,
+  comments?: Comment[],
+): Comment[] | undefined {
   skipBlanks(context);
 
   if (peek(context) !== '/') {
@@ -779,7 +828,10 @@ function tryParseObjectExpression(
   );
 }
 
-function parseObjectProperty(context: ParserContext, leadingComments?: Comment[]): ObjectProperty {
+function parseObjectProperty(
+  context: ParserContext,
+  leadingComments?: Comment[],
+): ObjectProperty {
   const start = context.position;
 
   const key = tryParseStringLiteral(context) || tryParseIdentifier(context);

@@ -25,7 +25,14 @@ const plugin = createJsonPlugin({
   parserFlags: JsonFlags.CommentsAllowed,
 
   modifier: combine(
-    sortObjectProperties(['$schema', 'version', 'cli', 'newProjectRoot', 'projects', 'schematics']),
+    sortObjectProperties([
+      '$schema',
+      'version',
+      'cli',
+      'newProjectRoot',
+      'projects',
+      'schematics',
+    ]),
 
     replacePropertyValue(
       'projects',
@@ -43,7 +50,10 @@ const plugin = createJsonPlugin({
           return [
             ...keys.filter(key => sortAtTheTop.includes(key)),
 
-            ...keys.filter(key => !sortAtTheTop.includes(key) && !sortAtTheBottom.includes(key)),
+            ...keys.filter(
+              key =>
+                !sortAtTheTop.includes(key) && !sortAtTheBottom.includes(key),
+            ),
 
             ...keys.filter(key => sortAtTheBottom.includes(key)),
           ];
@@ -53,14 +63,25 @@ const plugin = createJsonPlugin({
           combine(
             renameProperty('targets', 'architect'),
 
-            sortObjectProperties(['projectType', 'root', 'sourceRoot', 'architect', 'schematics']),
+            sortObjectProperties([
+              'projectType',
+              'root',
+              'sourceRoot',
+              'architect',
+              'schematics',
+            ]),
 
             replacePropertyValue(
               'architect',
               combine(
                 deepSortObjectProperties(),
                 replacePropertyValues(
-                  sortObjectProperties(['builder', 'options', 'configurations', 'schematics']),
+                  sortObjectProperties([
+                    'builder',
+                    'options',
+                    'configurations',
+                    'schematics',
+                  ]),
                 ),
               ),
             ),

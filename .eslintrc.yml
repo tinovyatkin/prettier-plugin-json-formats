@@ -19,7 +19,8 @@ rules:
   '@typescript-eslint/array-type': error
   '@typescript-eslint/consistent-type-definitions': [error, interface]
   '@typescript-eslint/explicit-member-accessibility': error
-  '@typescript-eslint/member-ordering': [error, {default: [field, constructor, method]}]
+  '@typescript-eslint/member-ordering':
+    [error, {default: [field, constructor, method]}]
   '@typescript-eslint/no-extraneous-class': error
   '@typescript-eslint/no-floating-promises': [error, {ignoreVoid: true}]
   '@typescript-eslint/no-require-imports': error

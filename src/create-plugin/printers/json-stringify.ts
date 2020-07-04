@@ -32,7 +32,12 @@ function genericPrint(
         ? '[]'
         : concat([
             '[',
-            indent(concat([hardline, join(concat([',', hardline]), path.map(print, 'elements'))])),
+            indent(
+              concat([
+                hardline,
+                join(concat([',', hardline]), path.map(print, 'elements')),
+              ]),
+            ),
             hardline,
             ']',
           ]);
@@ -42,7 +47,10 @@ function genericPrint(
         : concat([
             '{',
             indent(
-              concat([hardline, join(concat([',', hardline]), path.map(print, 'properties'))]),
+              concat([
+                hardline,
+                join(concat([',', hardline]), path.map(print, 'properties')),
+              ]),
             ),
             hardline,
             '}',
