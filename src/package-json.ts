@@ -24,7 +24,7 @@ const lifecycleScripts = [
 ];
 
 function parseScriptName(name: string): {name: string; offset: number} {
-  if (name.startsWith('pre')) {
+  if (name.startsWith('pre') && name !== 'prepare') {
     return {name: name.slice(3), offset: -0.4};
   } else if (name.startsWith('post')) {
     return {name: name.slice(4), offset: 0.4};
