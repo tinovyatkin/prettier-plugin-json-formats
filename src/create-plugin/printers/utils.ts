@@ -19,7 +19,7 @@ const {skipNewline, hasNewline, isPreviousLineEmpty} = (util as unknown) as {
   ): boolean;
 };
 
-function hasTrailingComment(node: Expression) {
+function hasTrailingComment(node: Expression): boolean {
   return !!node.trailingComments?.length;
 }
 
@@ -27,7 +27,7 @@ function hasLeadingOwnLineComment(
   text: string,
   node: Expression | ObjectProperty,
   options: ParserOptions,
-) {
+): boolean {
   return !!node.leadingComments?.some(comment =>
     hasNewline(text, options.locEnd(comment)),
   );

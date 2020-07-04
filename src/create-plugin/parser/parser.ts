@@ -575,7 +575,7 @@ function parseMultiLineComment(context: ParserContext): MultiLineComment {
     start,
     end: context.position,
     comment,
-    rawText: `/*${context}*/`,
+    rawText: `/*${comment}*/`,
   };
 }
 

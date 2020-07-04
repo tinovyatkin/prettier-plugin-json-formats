@@ -14,11 +14,7 @@ import {
   printComment,
 } from './comment';
 import {hasLeadingOwnLineComment, hasTrailingComment} from './utils';
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const isIdentifierName = require('esutils').keyword.isIdentifierNameES5 as (
-  str: string,
-) => boolean;
+import {keyword} from 'esutils';
 
 const {concat, hardline, indent, join} = doc.builders;
 const {makeString} = util;
@@ -140,7 +136,7 @@ function shouldQuoteKey(
     return key.type === 'string';
   }
 
-  return !isIdentifierName(key.value);
+  return !keyword.isIdentifierNameES5(key.value);
 }
 
 function printPropertyKey(
@@ -239,7 +235,7 @@ function createGenericPrint(flags: JsonFlags) {
     options: ParserOptions,
     print: (node: FastPath) => Doc,
   ): Doc => {
-    const node: ExtendedNode = path.getValue();
+    const node = path.getValue() as ExtendedNode;
     switch (node.type) {
       case 'JsonRoot':
         return concat([

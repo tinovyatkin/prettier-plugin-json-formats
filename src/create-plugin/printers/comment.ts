@@ -42,7 +42,7 @@ export function printComment(
   commentPath: FastPath<Comment>,
   options: ParserOptions,
   ensureSafeForContentAfter = false,
-) {
+): Doc {
   const comment = commentPath.getValue();
 
   switch (comment.type) {
@@ -78,7 +78,9 @@ export function printLeadingComment(
   if (!contents) {
     return '';
   }
-  const isBlock = (options as any).printer.isBlockComment?.(comment);
+  const isBlock = ((options as unknown) as {
+    printer: {isBlockComment?: (comment: Comment) => boolean};
+  }).printer.isBlockComment?.(comment);
 
   // Leading block comments should see if they need to stay on the
   // same line or not.
@@ -96,7 +98,7 @@ export function printTrailingComment(
   commentPath: FastPath<Comment>,
   options: ParserOptions,
   ensureSafeForContentAfter = false,
-) {
+): Doc {
   const comment = commentPath.getValue();
   const contents = printComment(
     commentPath,
@@ -106,7 +108,9 @@ export function printTrailingComment(
   if (!contents) {
     return '';
   }
-  const isBlock = (options as any).printer.isBlockComment?.(comment);
+  const isBlock = ((options as unknown) as {
+    printer: {isBlockComment?: (comment: Comment) => boolean};
+  }).printer.isBlockComment?.(comment);
 
   if (
     hasNewline(options.originalText, options.locStart(comment), {
@@ -150,7 +154,11 @@ function prependCursorPlaceholder(
   options: ParserOptions,
   printed: Doc,
 ): Doc {
-  if (path.getNode() === (options as any).cursorNode && path.getValue()) {
+  if (
+    path.getNode() ===
+      ((options as unknown) as {cursorNode: unknown}).cursorNode &&
+    path.getValue()
+  ) {
     return concat([cursor, printed, cursor]);
   }
   return printed;

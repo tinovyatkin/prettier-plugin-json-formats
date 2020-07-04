@@ -23,7 +23,7 @@ function genericPrint(
   _options: ParserOptions,
   print: (node: FastPath) => Doc,
 ): Doc {
-  const node: ExtendedNode = path.getValue();
+  const node = path.getValue() as ExtendedNode;
   switch (node.type) {
     case 'JsonRoot':
       return concat([path.call(print, 'node'), hardline]);

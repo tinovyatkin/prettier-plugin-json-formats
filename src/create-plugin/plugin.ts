@@ -17,7 +17,7 @@ export type CustomLanguage = Omit<SupportLanguage, 'parsers'>;
 export interface JsonPlugin {
   languages: SupportLanguage[];
 
-  options?: Record<string, SupportOption>;
+  options?: Record<string, Omit<SupportOption, 'name'>>;
 
   parsers: Record<string, Parser>;
   printers: Record<string, Printer>;

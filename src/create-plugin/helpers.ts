@@ -45,7 +45,7 @@ export const replaceProperties = (
     opts: ParserOptions,
     node: ObjectExpression,
   ) => ObjectProperty[],
-) =>
+): AstModifier<Expression, Expression> =>
   ifObjectExpression((node, opts) => ({
     ...node,
     properties: replacer(node.properties, opts, node),
@@ -58,7 +58,7 @@ export const replacePropertyValues = (
     key: string,
     node: ObjectExpression,
   ) => Expression,
-) =>
+): AstModifier<Expression, Expression> =>
   replaceProperties((properties, opts, node) =>
     properties.map(prop => ({
       ...prop,
@@ -73,7 +73,7 @@ export const replacePropertyValue = (
     opts: ParserOptions,
     node: ObjectExpression,
   ) => Expression,
-) =>
+): AstModifier<Expression, Expression> =>
   replaceProperties((properties, opts, node) =>
     properties.map(prop =>
       getKey(prop) === key
@@ -89,7 +89,10 @@ export function getProperty(
   return node.properties.find(prop => getKey(prop) === key);
 }
 
-export const renameProperty = (oldKey: string, newKey: string) =>
+export const renameProperty = (
+  oldKey: string,
+  newKey: string,
+): AstModifier<Expression, Expression> =>
   replaceProperties(properties =>
     properties.map(prop => {
       if (getKey(prop) !== oldKey) {
@@ -117,7 +120,7 @@ export const sortObjectProperties = (
   order?:
     | string[]
     | ((node: ObjectExpression, opts: ParserOptions) => string[] | undefined),
-) =>
+): AstModifier<Expression, Expression> =>
   replaceProperties((properties, opts, node) => {
     const actualOrder =
       (order && (typeof order === 'function' ? order(node, opts) : order)) ||
@@ -152,7 +155,7 @@ export function deepSortObjectProperties(
   order?:
     | string[]
     | ((node: ObjectExpression, opts: ParserOptions) => string[] | undefined),
-) {
+): AstModifier<Expression, Expression> {
   const deepSort = combine(
     sortObjectProperties(order),
     replacePropertyValues((node, opts) =>
