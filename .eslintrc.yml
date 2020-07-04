@@ -1,0 +1,39 @@
+root: true
+plugins: ['@typescript-eslint']
+parserOptions:
+  project: tsconfig.json
+extends:
+  - eslint:recommended
+  - plugin:@typescript-eslint/eslint-recommended
+
+  - plugin:@typescript-eslint/recommended
+  - plugin:@typescript-eslint/recommended-requiring-type-checking
+reportUnusedDisableDirectives: true
+
+rules:
+  '@typescript-eslint/explicit-function-return-type': off
+  '@typescript-eslint/no-non-null-assertion': off
+  '@typescript-eslint/no-use-before-define': off
+
+  no-console: error
+  '@typescript-eslint/array-type': error
+  '@typescript-eslint/consistent-type-definitions': [error, interface]
+  '@typescript-eslint/explicit-member-accessibility': error
+  '@typescript-eslint/member-ordering': [error, {default: [field, constructor, method]}]
+  '@typescript-eslint/no-extraneous-class': error
+  '@typescript-eslint/no-floating-promises': [error, {ignoreVoid: true}]
+  '@typescript-eslint/no-require-imports': error
+  '@typescript-eslint/no-untyped-public-signature': error
+  '@typescript-eslint/no-unused-expressions': error
+  '@typescript-eslint/no-unused-vars':
+    [error, {argsIgnorePattern: ^_, caughtErrorsIgnorePattern: ^_}]
+  '@typescript-eslint/no-useless-constructor': error
+  '@typescript-eslint/prefer-for-of': error
+  '@typescript-eslint/prefer-readonly': error
+  '@typescript-eslint/unified-signatures': warn
+  'no-constant-condition': [error, {checkLoops: false}]
+
+  # Disable because of false positives. It shouldn't apply on global RegExp
+  # instances, but it doesn't know if the regexp has the `g` flag if passed in
+  # as e.g. function parameter
+  '@typescript-eslint/prefer-regexp-exec': off
