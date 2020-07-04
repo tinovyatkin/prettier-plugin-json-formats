@@ -1,9 +1,11 @@
 import {Expression, ObjectProperty} from '../parser';
 import {ParserOptions, util} from 'prettier';
 
-type SkipOptions = {backwards?: boolean};
+interface SkipOptions {
+  backwards?: boolean;
+}
 
-const {skipNewline, hasNewline, isPreviousLineEmpty} = (util as any) as {
+const {skipNewline, hasNewline, isPreviousLineEmpty} = (util as unknown) as {
   skipNewline(text: string, index: number | false, opts?: SkipOptions): number | false;
   hasNewline(text: string, index: number, opts?: SkipOptions): boolean;
   isPreviousLineEmpty<N>(text: string, node: N, locStart: (node: N) => number): boolean;

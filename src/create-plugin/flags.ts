@@ -1,5 +1,5 @@
 /**
- * Mode used for parsing and printing JSON
+ * Mode used for parsing and printing JSON
  */
 export enum JsonFlags {
   Strict = 0, // Standard JSON.

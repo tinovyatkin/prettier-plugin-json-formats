@@ -5,6 +5,7 @@ import {JsonFlags} from '../flags';
 import {printLeadingComment, printTrailingComment, printComment} from './comment';
 import {hasLeadingOwnLineComment, hasTrailingComment} from './utils';
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const isIdentifierName = require('esutils').keyword.isIdentifierNameES5 as (str: string) => boolean;
 
 const {concat, hardline, indent, join} = doc.builders;

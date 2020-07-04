@@ -46,9 +46,11 @@
     "@typescript-eslint/no-useless-constructor": "error",
     "@typescript-eslint/prefer-for-of": "error",
     "@typescript-eslint/prefer-readonly": "error",
-    "@typescript-eslint/unified-signatures": "warn"
+    "@typescript-eslint/unified-signatures": "warn",
+    "no-constant-condition": ["error", {"checkLoops": false}],
+
+    "@typescript-eslint/prefer-regexp-exec": "off"
   },
 
-  "reportUnusedDisableDirectives": true,
-  "no-constant-condition": ["error", {"checkLoops": false}]
+  "reportUnusedDisableDirectives": true
 }
