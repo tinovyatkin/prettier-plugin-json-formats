@@ -59,7 +59,9 @@ const plugin = createJsonPlugin({
               'architect',
               combine(
                 deepSortObjectProperties(),
-                sortObjectProperties(['builder', 'options', 'configurations', 'schematics']),
+                replacePropertyValues(
+                  sortObjectProperties(['builder', 'options', 'configurations', 'schematics']),
+                ),
               ),
             ),
 
