@@ -25,7 +25,7 @@ const plugin = createJsonPlugin({
   parserFlags: JsonFlags.CommentsAllowed,
 
   modifier: combine(
-    sortObjectProperties(['$schema', 'version', 'newProjectRoot', 'projects', 'cli', 'schematics']),
+    sortObjectProperties(['$schema', 'version', 'cli', 'newProjectRoot', 'projects', 'schematics']),
 
     replacePropertyValue(
       'projects',
