@@ -75,6 +75,7 @@ export const packageJsonPlugin = createJsonPlugin({
       'repository',
       'license',
       'author',
+      'contributors',
 
       'bin',
       'man',
